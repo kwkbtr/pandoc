@@ -175,6 +175,7 @@ data Opt = Opt
     , optNumberSections    :: Bool    -- ^ Number sections in LaTeX
     , optNumberOffset      :: [Int]   -- ^ Starting number for sections
     , optSectionDivs       :: Bool    -- ^ Put sections in div tags in HTML
+    , optAddDpubAria       :: Bool    -- ^ Add DPUB-ARIA attributes in tags in HTML
     , optIncremental       :: Bool    -- ^ Use incremental lists in Slidy/Slideous/S5
     , optSelfContained     :: Bool    -- ^ Make HTML accessible offline
     , optSmart             :: Bool    -- ^ Use smart typography
@@ -237,6 +238,7 @@ defaultOpts = Opt
     , optNumberSections        = False
     , optNumberOffset          = [0,0,0,0,0,0]
     , optSectionDivs           = False
+    , optAddDpubAria           = False
     , optIncremental           = False
     , optSelfContained         = False
     , optSmart                 = False
@@ -633,6 +635,11 @@ options =
                  (NoArg
                   (\opt -> return opt { optSectionDivs = True }))
                  "" -- "Put sections in div tags in HTML"
+
+    , Option "" ["add-dpub-aria"]
+                 (NoArg
+                  (\opt -> return opt { optAddDpubAria = True }))
+                 "" -- "Add DPUB-ARIA attributes in tags in HTML"
 
     , Option "" ["default-image-extension"]
                  (ReqArg
@@ -1082,6 +1089,7 @@ main = do
               , optNumberSections        = numberSections
               , optNumberOffset          = numberFrom
               , optSectionDivs           = sectionDivs
+              , optAddDpubAria           = addDpubAria
               , optIncremental           = incremental
               , optSelfContained         = selfContained
               , optSmart                 = smart
@@ -1320,6 +1328,7 @@ main = do
                             writerNumberSections   = numberSections,
                             writerNumberOffset     = numberFrom,
                             writerSectionDivs      = sectionDivs,
+                            writerAddDpubAria      = addDpubAria,
                             writerReferenceLinks   = referenceLinks,
                             writerWrapText         = wrap,
                             writerColumns          = columns,

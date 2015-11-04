@@ -330,6 +330,7 @@ data WriterOptions = WriterOptions
   , writerNumberSections   :: Bool   -- ^ Number sections in LaTeX
   , writerNumberOffset     :: [Int]  -- ^ Starting number for section, subsection, ...
   , writerSectionDivs      :: Bool   -- ^ Put sections in div tags in HTML
+  , writerAddDpubAria      :: Bool   -- ^ Add DPUB-ARIA attributes in tags in HTML
   , writerExtensions       :: Set Extension -- ^ Markdown extensions that can be used
   , writerReferenceLinks   :: Bool   -- ^ Use reference links in writing markdown, rst
   , writerWrapText         :: Bool   -- ^ Wrap text to line length
@@ -376,6 +377,7 @@ instance Default WriterOptions where
                       , writerNumberSections   = False
                       , writerNumberOffset     = [0,0,0,0,0,0]
                       , writerSectionDivs      = False
+                      , writerAddDpubAria      = False
                       , writerExtensions       = pandocExtensions
                       , writerReferenceLinks   = False
                       , writerWrapText         = True

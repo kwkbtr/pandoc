@@ -321,7 +321,8 @@ elementToHtml slideLevel opts (Sec level num (id',classes,keyvals) title' elemen
   let secttag  = if writerHtml5 opts
                     then H5.section
                     else H.div
-  let attr = (id',classes',keyvals)
+  let keyvals' = if level == 1 && writerAddDpubAria opts then ("role", "dpub-chapter") : keyvals else keyvals
+  let attr = (id',classes',keyvals')
   return $ if titleSlide
               then (if writerSlideVariant opts == RevealJsSlides
                        then H5.section
@@ -339,14 +340,15 @@ footnoteSection :: WriterOptions -> [Html] -> Html
 footnoteSection opts notes =
   if null notes
      then mempty
-     else nl opts >> (container
-          $ nl opts >> hrtag >> nl opts >>
+     else nl opts >> hrtag >> nl opts >> (container
+          $ nl opts >>
             H.ol (mconcat notes >> nl opts) >> nl opts)
    where container x = if writerHtml5 opts
-                          then H5.section ! A.class_ "footnotes" $ x
+                          then H5.section ! attr $ x
                           else if writerSlideVariant opts /= NoSlides
                                then H.div ! A.class_ "footnotes slide" $ x
                                else H.div ! A.class_ "footnotes" $ x
+         attr = if writerAddDpubAria opts then customAttribute "role" "dpub-footnotes" else A.class_ "footnotes"
          hrtag = if writerHtml5 opts then H5.hr else H.hr
 
 -- | Parse a mailto link; return Just (name, domain) or Nothing.
@@ -424,6 +426,7 @@ treatAsImage fp =
                   Just up -> up
       ext  = map toLower $ drop 1 $ takeExtension path
   in  null ext || ext `elem` imageExts
+
 
 -- | Convert Pandoc block element to HTML.
 blockToHtml :: WriterOptions -> Block -> State WriterState Html
@@ -833,10 +836,13 @@ inlineToHtml opts inline =
                         put $ st {stNotes = (htmlContents:notes)}
                         let revealSlash = ['/' | writerSlideVariant opts
                                                  == RevealJsSlides]
+                        let footnoteRefAttr = if writerAddDpubAria opts
+                                                 then customAttribute "role" "dpub-noteref"
+                                                 else A.class_ "footnoteRef"
                         let link = H.a ! A.href (toValue $ "#" ++
                                          revealSlash ++
                                          writerIdentifierPrefix opts ++ "fn" ++ ref)
-                                       ! A.class_ "footnoteRef"
+                                       ! footnoteRefAttr
                                        ! prefixedId opts ("fnref" ++ ref)
                                        $ (if isJust (writerEpubVersion opts)
                                              then id
@@ -873,7 +879,10 @@ blockListToNote opts ref blocks =
          let noteItem' = case writerEpubVersion opts of
                               Just EPUB3 -> noteItem ! customAttribute "epub:type" "footnote"
                               _          -> noteItem
-         return $ nl opts >> noteItem'
+         let noteItem'' = if writerAddDpubAria opts
+                             then noteItem' ! customAttribute "role" "dpub-footnote"
+                             else noteItem'
+         return $ nl opts >> noteItem''
 
 -- Javascript snippet to render all KaTeX elements
 renderKaTeX :: String
