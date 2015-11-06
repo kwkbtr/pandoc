@@ -488,7 +488,7 @@ inlineCommands = M.fromList $
   , ("mcfamily", extractSpaces (spanWith("",["textmc"],[])) <$> inlines)
   , ("gtfamily", extractSpaces (spanWith("",["textgt"],[])) <$> inlines)
   , ("itshape", extractSpaces emph <$> inlines)
-  , ("slshape", extractSpaces emph <$> inlines)
+  , ("slshape", extractSpaces (spanWith ("",["textsl"],[])) <$> extractSpaces emph <$> inlines)
   , ("scshape", extractSpaces smallcaps <$> inlines)
   , ("upshape", extractSpaces (spanWith ("",["textup"],[])) <$> inlines)
   , ("mdseries", extractSpaces (spanWith ("",["textmd"],[])) <$> inlines)
